@@ -1,6 +1,7 @@
 # Quick sort algorithm in python
 import random
-
+import time
+import matplotlib.pyplot as plt
 
 def partition(array, low, high):
     # random pivot
@@ -95,36 +96,89 @@ def hybrid_merge_selection_sort(array, low, high, threshold):
 
 
 # Kth smallest element in an array using partition from quick sort
-def kth_smallest(array, low, high, k):
-    if low < high:
-        pi = partition(array, low, high)
-        if pi > k - 1:
-            kth_smallest(array, low, pi - 1, k)
-        elif pi < k - 1:
-            kth_smallest(array, pi + 1, high, k)
-    return array[pi]
+def findKthSmallest(arr, k):
+    low = 0
+    high = len(arr) - 1
+    pi = partition(arr, low, high)
+    while low <= high:
+        if pi == k-1:
+            return arr[pi]
+        elif pi < k:
+            pi = partition(arr, pi+1, high)
+        else:
+            pi = partition(arr, low, pi-1)
+
 
 # test quick sort
 # random array of size 100
-array = [random.randint(0, 10000) for i in range(10)]
-array1 = array.copy()
-array2 = array.copy()
-array3 = array.copy()
-array4 = array.copy()
-array5 = array.copy()
-quick_sort(array, 0, len(array) - 1)
-merge_sort(array1, 0, len(array1) - 1)
-insertion_sort(array2)
-selection_sort(array3)
-hybrid_merge_selection_sort(array4, 0, len(array4) - 1, 3)
-K = kth_smallest(array5, 0, len(array5) - 1, 4)
-print(K)
-print(array5)
+list_length=[100,200,500,1000,10000,25000,50000,100000]
+time_in_microseconds_insertion_sort = [0]*len(list_length)
+time_in_microseconds_selection_sort = [0]*len(list_length)
+time_in_microseconds_merge_sort = [0]*len(list_length)
+time_in_microseconds_quick_sort = [0]*len(list_length)
+time_in_microseconds_merge_sort_threshold = [0]*len(list_length)
+time_in_microseconds_find_kth_smallest = [0]*len(list_length)
+for i in list_length:
+    print("array of length:",i)
+    array = [random.randint(0, i*100) for i in range(i)]
+    array1 = array.copy()
+    array2 = array.copy()
+    array3 = array.copy()
+    array4 = array.copy()
+    array5 = array.copy()
+    #Quick sort
+    start_time=time.time_ns()//1000
+    quick_sort(array, 0, len(array) - 1)
+    end_time=time.time_ns()//1000
+    time_in_microseconds_quick_sort[list_length.index(i)]=end_time-start_time
+    print("Quick sort time:",end_time-start_time, "microseconds")
+    #Merge sort
+    start_time=time.time_ns()//1000
+    merge_sort(array1, 0, len(array1) - 1)
+    end_time=time.time_ns()//1000
+    time_in_microseconds_merge_sort[list_length.index(i)]=end_time-start_time
+    print("Merge sort time:",end_time-start_time, "microseconds")
+    #Insertion sort
+    start_time=time.time_ns()//1000
+    insertion_sort(array2)
+    end_time=time.time_ns()//1000
+    time_in_microseconds_insertion_sort[list_length.index(i)]=end_time-start_time
+    print("Insertion sort time:",end_time-start_time,"microseconds")
+    #Selection sort
+    start_time=time.time_ns()//1000
+    selection_sort(array3)
+    end_time=time.time_ns()//1000
+    time_in_microseconds_selection_sort[list_length.index(i)]=end_time-start_time
+    print("Selection sort time:",end_time-start_time,"microseconds")
+    # Hybrid Merge sort and selection sort
+    start_time=time.time_ns()//1000
+    hybrid_merge_selection_sort(array4, 0, len(array4) - 1, 3)
+    end_time=time.time_ns()//1000
+    time_in_microseconds_merge_sort_threshold[list_length.index(i)]=end_time-start_time
+    print("Hybrid Merge sort and selection sort time:",end_time-start_time,"microseconds")
+    #Find kth smallest element
+    start_time=time.time_ns()//1000
+    K = findKthSmallest(array5, 3)
+    end_time=time.time_ns()//1000
+    time_in_microseconds_find_kth_smallest[list_length.index(i)]=end_time-start_time
+    print("Kth Smallest element:", K)
+    print("Find kth smallest element time:",end_time-start_time,"microseconds")
+    print("First 10 elements:",array4[:10])
+    if array == sorted(array) and array1 == sorted(array1) and array2 == sorted(array2) and array3 == sorted(
+            array3) and array4 == sorted(array4):
+        print("Sorting is correct")
+    else:
+        print("Sorting is incorrect")
 
-if array == sorted(array) and array1 == sorted(array1) and array2 == sorted(array2) and array3 == sorted(
-        array3) and array4 == sorted(array4):
-    print("Sorting is correct")
-else:
-    print("Sorting is incorrect")
+#plotting the time taken for each sort
+plt.plot(list_length,time_in_microseconds_insertion_sort,label="Insertion sort")
+plt.plot(list_length,time_in_microseconds_selection_sort,label="Selection sort")
+plt.plot(list_length,time_in_microseconds_merge_sort,label="Merge sort")
+plt.plot(list_length,time_in_microseconds_quick_sort,label="Quick sort")
+plt.plot(list_length,time_in_microseconds_merge_sort_threshold,label="Hybrid Merge sort and selection sort")
+plt.plot(list_length,time_in_microseconds_find_kth_smallest,label="Find kth smallest element")
+plt.xlabel("Array length")
+plt.ylabel("Time in microseconds")
+plt.legend()
+plt.show()
 
-print("Array", array5)
