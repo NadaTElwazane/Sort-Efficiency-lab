@@ -109,9 +109,9 @@ def findKthSmallest(arr, k):
             pi = partition(arr, low, pi-1)
 
 
-# test quick sort
-# random array of size 100
-list_length=[100,200,500,1000,10000,25000,50000,100000]
+# array sizes
+list_length=[100,200,500,1000,10000,25000,50000,100000,250000]
+threshold=3
 time_in_microseconds_insertion_sort = [0]*len(list_length)
 time_in_microseconds_selection_sort = [0]*len(list_length)
 time_in_microseconds_merge_sort = [0]*len(list_length)
@@ -158,17 +158,12 @@ for i in list_length:
     print("Hybrid Merge sort and selection sort time:",end_time-start_time,"microseconds")
     #Find kth smallest element
     start_time=time.time_ns()//1000
-    K = findKthSmallest(array5, 3)
+    K = findKthSmallest(array5, threshold)
     end_time=time.time_ns()//1000
     time_in_microseconds_find_kth_smallest[list_length.index(i)]=end_time-start_time
     print("Kth Smallest element:", K)
     print("Find kth smallest element time:",end_time-start_time,"microseconds")
     print("First 10 elements:",array4[:10])
-    if array == sorted(array) and array1 == sorted(array1) and array2 == sorted(array2) and array3 == sorted(
-            array3) and array4 == sorted(array4):
-        print("Sorting is correct")
-    else:
-        print("Sorting is incorrect")
 
 #plotting the time taken for each sort
 plt.plot(list_length,time_in_microseconds_insertion_sort,label="Insertion sort")
